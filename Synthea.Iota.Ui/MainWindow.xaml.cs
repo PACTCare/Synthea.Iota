@@ -7,6 +7,8 @@
   using System.Windows.Media.Animation;
 
   using Synthea.Iota.Core.Services;
+  using Synthea.Iota.Ui;
+  using Synthea.Iota.Ui.Services;
 
   /// <summary>
   /// Interaction logic for MainWindow.xaml
@@ -17,19 +19,28 @@
     {
       this.InitializeComponent();
       this.InitializeSynthea();
+
+      Navigator.MainWindow = this;
     }
 
     private void InitializeSynthea()
     {
-      ((Storyboard)this.FindResource("WaitStoryboard")).Begin();
+      var spinner = new LoadingSpinner();
+      this.Content = spinner;
+
+      spinner.Start();
 
       SyntheaInstaller.VersionCheck += (sender, args) =>
         {
-          this.Dispatcher.BeginInvoke(new Action(() => { ((TextBlock)this.FindName("UpdateDescription")).Text = "Checking Synthea Version"; }));
+          this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Checking Synthea Version"); }));
+        };
+      SyntheaInstaller.DownloadLatest += (sender, args) =>
+        {
+          this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Downloading Latest Synthea"); }));
         };
       SyntheaInstaller.InstallLatest += (sender, args) =>
         {
-          this.Dispatcher.BeginInvoke(new Action(() => { ((TextBlock)this.FindName("UpdateDescription")).Text = "Installing Latest Synthea"; }));
+          this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Installing Latest Synthea"); }));
         };
       SyntheaInstaller.SetupComplete += (sender, args) =>
         {
@@ -37,8 +48,7 @@
             new Action(
               () =>
                 {
-                  ((Storyboard)this.FindResource("WaitStoryboard")).Stop();
-                  ((Grid)this.FindName("LoadingSpinner")).Visibility = Visibility.Hidden;
+                  this.Content = new MainMenu();
                 }));
         };
 

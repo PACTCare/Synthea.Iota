@@ -5,24 +5,4 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Synthea Importer for IOTA" Height="450" Width="800">
-  <Window.Resources>
-    <Storyboard x:Key="WaitStoryboard">
-      <DoubleAnimation
-        Storyboard.TargetName="Wait"
-        Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)"
-        From="0"
-        To="360"
-        Duration="0:0:2"
-        RepeatBehavior="Forever" />
-    </Storyboard>
-  </Window.Resources>
-
-  <Grid x:Name="LoadingSpinner" HorizontalAlignment="Center" VerticalAlignment="Center">
-    <TextBlock Name="Wait" FontFamily="Fonts/#FontAwesome" FontSize="50" Text="&#xf110;" RenderTransformOrigin="0.5, 0.5" Margin="38,0,37,0">
-      <TextBlock.RenderTransform>
-        <RotateTransform Angle="0" />
-      </TextBlock.RenderTransform>
-    </TextBlock>
-    <TextBlock x:Name="UpdateDescription" Margin="0,56,0,-26" Text="Placeholder" />
-  </Grid>
 </Window>

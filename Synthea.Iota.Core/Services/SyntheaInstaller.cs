@@ -11,6 +11,8 @@
 
   public static class SyntheaInstaller
   {
+    public static event EventHandler DownloadLatest;
+
     public static event EventHandler InstallLatest;
 
     public static event EventHandler SetupComplete;
@@ -37,10 +39,17 @@
         return currentVersion;
       }
 
-      InstallLatest?.Invoke("SyntheaInstaller", EventArgs.Empty);
+      DownloadLatest?.Invoke("SyntheaInstaller", EventArgs.Empty);
       client.DownloadData(new RestRequest($"/archive/{tag}.zip")).SaveAs("synthea.zip");
       ZipFile.ExtractToDirectory("synthea.zip", "Synthea");
       File.Delete("synthea.zip");
+
+      InstallLatest?.Invoke("SyntheaInstaller", EventArgs.Empty);
+      var synthea = SyntheaRunner.StartSynthea(string.Empty);
+      synthea.WaitForExit();
+      synthea.Close();
+
+      Directory.Delete($"Synthea/synthea-{currentVersion}/output", true);
 
       SetupComplete?.Invoke("SyntheaInstaller", EventArgs.Empty);
       return currentVersion;
