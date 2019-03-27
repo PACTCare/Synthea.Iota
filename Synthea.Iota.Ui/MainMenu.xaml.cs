@@ -21,7 +21,7 @@
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
       var spinner = new LoadingSpinner();
-      Navigator.SetContent(spinner);
+      ApplicationManager.SetContent(spinner);
 
       spinner.Start();
 
@@ -30,13 +30,22 @@
           this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Creating Patient records."); }));
         };
 
+      SyntheaRunner.ParsingSyntheaData += (o, args) =>
+        {
+          this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Parsing Patient records."); }));
+        };
+
       SyntheaRunner.FinishedSynthea += (o, args) =>
         {
-          this.Dispatcher.BeginInvoke(new Action(() => { Navigator.SetContent(new MainMenu()); }));
+          this.Dispatcher.BeginInvoke(new Action(() => { ApplicationManager.SetContent(new MainMenu()); }));
         };
 
       var patientAmount = int.Parse(((TextBox)this.FindName("PatientAmount")).Text);
-      Task.Run(() => SyntheaRunner.CreatePatients(patientAmount));
+      Task.Run(
+        () =>
+          {
+            var records = SyntheaRunner.CreatePatients(patientAmount, ApplicationManager.CurrentSyntheaVersion);
+          });
     }
   }
 }

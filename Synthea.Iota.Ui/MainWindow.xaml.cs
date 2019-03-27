@@ -20,7 +20,7 @@
       this.InitializeComponent();
       this.InitializeSynthea();
 
-      Navigator.MainWindow = this;
+      ApplicationManager.MainWindow = this;
     }
 
     private void InitializeSynthea()
@@ -52,7 +52,7 @@
                 }));
         };
 
-      Task.Run(() => SyntheaInstaller.InstallOrUpdate());
+      Task.Run(() => ApplicationManager.CurrentSyntheaVersion = SyntheaInstaller.InstallOrUpdate());
     }
   }
 }

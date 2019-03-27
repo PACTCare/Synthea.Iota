@@ -13,7 +13,7 @@ namespace Synthea.Iota.Core.Tests
       var currentVersion = SyntheaInstaller.InstallOrUpdate();
       Assert.AreEqual("2.4.0", currentVersion);
 
-      SyntheaRunner.CreatePatients(5);
+      SyntheaRunner.CreatePatients(5, currentVersion);
     }
   }
 }
