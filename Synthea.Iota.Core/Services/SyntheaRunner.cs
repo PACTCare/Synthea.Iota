@@ -4,9 +4,12 @@
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.IO;
+  using System.Linq;
 
   using Hl7.Fhir.Model;
   using Hl7.Fhir.Serialization;
+
+  using Synthea.Iota.Core.Entity;
 
   public static class SyntheaRunner
   {
@@ -16,7 +19,7 @@
 
     public static event EventHandler StartingSynthea;
 
-    public static List<Resource> CreatePatients(int count, string currentVersion)
+    public static List<ParsedPatient> CreatePatients(int count, string currentVersion)
     {
       try
       {
@@ -60,23 +63,27 @@
       return $"{executionDir}\\Synthea\\synthea-{currentVersion}";
     }
 
-    private static List<Resource> ParseSyntheaData(string currentVersion)
+    private static List<ParsedPatient> ParseSyntheaData(string currentVersion)
     {
       ParsingSyntheaData?.Invoke("SyntheaRunner", EventArgs.Empty);
 
-      var createdResources = new List<Resource>();
+      var parsedPatients = new List<ParsedPatient>();
       var resourceParser = new FhirJsonParser();
       var outputDirectory = $"{GetSyntheaDirectory(currentVersion)}\\output\\fhir";
 
       foreach (var file in Directory.GetFiles(outputDirectory))
       {
-        createdResources.Add(resourceParser.Parse<Resource>(File.ReadAllText(file)));
+        var parsedBundle = resourceParser.Parse<Bundle>(File.ReadAllText(file));
+        if (parsedBundle.Entry[0].Resource is Patient)
+        {
+          parsedPatients.Add(new ParsedPatient { Resources = parsedBundle.Entry.Select(e => e.Resource).ToList() });
+        }
       }
 
       Directory.Delete(outputDirectory, true);
       FinishedSynthea?.Invoke("SyntheaRunner", EventArgs.Empty);
 
-      return createdResources;
+      return parsedPatients;
     }
   }
 }

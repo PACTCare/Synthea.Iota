@@ -1,0 +1,23 @@
+﻿<Page x:Class="Synthea.Iota.Ui.PatientList"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Synthea.Iota.Ui"
+      mc:Ignorable="d" 
+      d:DesignHeight="800" d:DesignWidth="1200"
+      Title="PatientList">
+
+    <Grid>
+    <ListView Margin="10" Name="Patients" Width="290" HorizontalAlignment="Left" SelectionChanged="Patients_OnSelectionChanged">
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+          <GridViewColumn Header="Resource Count" DisplayMemberBinding="{Binding ResourceCount}" />
+        </GridView>
+      </ListView.View>
+    </ListView>
+    <TreeView HorizontalAlignment="Right" Width="890" Name="PatientDetails" >
+    </TreeView>
+  </Grid>
+</Page>

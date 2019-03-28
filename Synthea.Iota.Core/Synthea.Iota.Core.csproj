@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entity\ParsedPatient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\SyntheaInstaller.cs" />
     <Compile Include="Services\SyntheaRunner.cs" />

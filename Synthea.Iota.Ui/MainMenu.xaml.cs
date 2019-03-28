@@ -44,7 +44,8 @@
       Task.Run(
         () =>
           {
-            var records = SyntheaRunner.CreatePatients(patientAmount, ApplicationManager.CurrentSyntheaVersion);
+            var patients = SyntheaRunner.CreatePatients(patientAmount, ApplicationManager.CurrentSyntheaVersion);
+            this.Dispatcher.BeginInvoke(new Action(() => { ApplicationManager.SetContent(new PatientList(patients)); }));
           });
     }
   }
