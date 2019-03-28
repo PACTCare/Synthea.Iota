@@ -35,6 +35,11 @@
           this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Parsing Patient records."); }));
         };
 
+      SyntheaRunner.StoringSyntheaData += (o, args) =>
+        {
+          this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Storing Patient records."); }));
+        };
+
       SyntheaRunner.FinishedSynthea += (o, args) =>
         {
           this.Dispatcher.BeginInvoke(new Action(() => { ApplicationManager.SetContent(new MainMenu()); }));

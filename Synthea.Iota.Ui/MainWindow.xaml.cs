@@ -3,8 +3,6 @@
   using System;
   using System.Threading.Tasks;
   using System.Windows;
-  using System.Windows.Controls;
-  using System.Windows.Media.Animation;
 
   using Synthea.Iota.Core.Services;
   using Synthea.Iota.Ui;
@@ -48,7 +46,15 @@
             new Action(
               () =>
                 {
-                  this.Content = new MainMenu();
+                  var patients = ApplicationManager.PatientRepository.LoadPatients();
+                  if (patients.Count > 0)
+                  {
+                    ApplicationManager.SetContent(new PatientList(patients));
+                  }
+                  else
+                  {
+                    ApplicationManager.SetContent(new MainMenu());
+                  }
                 }));
         };
 

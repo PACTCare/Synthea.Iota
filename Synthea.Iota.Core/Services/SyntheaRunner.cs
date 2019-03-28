@@ -10,12 +10,15 @@
   using Hl7.Fhir.Serialization;
 
   using Synthea.Iota.Core.Entity;
+  using Synthea.Iota.Core.Repository;
 
   public static class SyntheaRunner
   {
     public static event EventHandler FinishedSynthea;
 
     public static event EventHandler ParsingSyntheaData;
+
+    public static event EventHandler StoringSyntheaData;
 
     public static event EventHandler StartingSynthea;
 
@@ -29,7 +32,13 @@
         process.WaitForExit();
         process.Close();
 
-        return ParseSyntheaData(currentVersion);
+        var parsedPatients = ParseSyntheaData(currentVersion);
+
+        StoringSyntheaData?.Invoke("SyntheaRunner", EventArgs.Empty);
+        new SqlLitePatientRepository().StorePatients(parsedPatients);
+
+        FinishedSynthea?.Invoke("SyntheaRunner", EventArgs.Empty);
+        return parsedPatients;
       }
       catch (Exception e)
       {
@@ -81,8 +90,6 @@
       }
 
       Directory.Delete(outputDirectory, true);
-      FinishedSynthea?.Invoke("SyntheaRunner", EventArgs.Empty);
-
       return parsedPatients;
     }
   }

@@ -18,5 +18,7 @@
     public int ResourceCount => this.Resources.Count;
 
     public List<Resource> Resources { get; set; }
+
+    public string Seed { get; set; }
   }
 }
