@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synthea.Iota.Ui", "Synthea.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synthea.Iota.Core", "Synthea.Iota.Core\Synthea.Iota.Core.csproj", "{F344D80F-D7D6-4488-BB39-6E20F2A6F208}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synthea.Iota.Core.Tests", "Synthea.Iota.Core.Tests\Synthea.Iota.Core.Tests.csproj", "{EF5F7B52-8FAE-49F2-B6A2-BF73800BA1FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthea.Iota.Core.Tests", "Synthea.Iota.Core.Tests\Synthea.Iota.Core.Tests.csproj", "{EF5F7B52-8FAE-49F2-B6A2-BF73800BA1FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
