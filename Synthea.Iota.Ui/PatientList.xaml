@@ -1,15 +1,14 @@
-﻿<Page x:Class="Synthea.Iota.Ui.PatientList"
+﻿<UserControl x:Class="Synthea.Iota.Ui.PatientList"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Synthea.Iota.Ui"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:entity="clr-namespace:Synthea.Iota.Core.Entity;assembly=Synthea.Iota.Core"
       mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1200"
-      Title="PatientList">
+      d:DesignWidth="1200">
 
-    <Grid>
-    <ListView Margin="10" Name="Patients" Width="290" HorizontalAlignment="Left" SelectionChanged="Patients_OnSelectionChanged">
+    <Grid Margin="10">
+    <ListView Margin="0, 10, 0, 0" Name="Patients" Width="290" HorizontalAlignment="Left" SelectionChanged="Patients_OnSelectionChanged">
       <ListView.View>
         <GridView>
           <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
@@ -17,7 +16,7 @@
         </GridView>
       </ListView.View>
     </ListView>
-    <TreeView HorizontalAlignment="Right" Width="890" Name="PatientDetails" >
+    <TreeView HorizontalAlignment="Right" Width="880" Name="PatientDetails" Margin="0, 10" MouseDoubleClick="PatientDetails_OnMouseDoubleClick" >
     </TreeView>
   </Grid>
-</Page>
+</UserControl>

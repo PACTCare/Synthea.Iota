@@ -3,8 +3,6 @@
   using System.Collections.Generic;
   using System.Data.SQLite;
   using System.IO;
-  using System.IO.Compression;
-  using System.Text;
 
   using Hl7.Fhir.Model;
   using Hl7.Fhir.Serialization;
@@ -35,7 +33,7 @@
           var patientRecords = command.ExecuteReader();
           while (patientRecords.Read())
           {
-            var parsedPatient = new ParsedPatient { Seed = patientRecords["Seed"] as string, Resources = new List<Resource>() };
+            var parsedPatient = new ParsedPatient { Seed = patientRecords["Seed"] as string, Resources = new List<ParsedResource>() };
 
             var patientId = patientRecords["Id"] as string;
             using (var innerCommand = new SQLiteCommand($"SELECT * FROM Resource WHERE PatientId='{patientId}'", connection))
@@ -43,7 +41,7 @@
               var resources = innerCommand.ExecuteReader();
               while (resources.Read())
               {
-                parsedPatient.Resources.Add(parser.Parse<Resource>(resources["Payload"] as string));
+                parsedPatient.Resources.Add(new ParsedResource { Resource = parser.Parse<Resource>(resources["Payload"] as string) });
               }
             }
 
@@ -66,7 +64,7 @@
         {
           foreach (var parsedPatient in patients)
           {
-            using (var command = new SQLiteCommand($"INSERT OR IGNORE INTO Patient (Id) VALUES ('{parsedPatient.Resources[0].Id}')", connection, transaction))
+            using (var command = new SQLiteCommand($"INSERT OR IGNORE INTO Patient (Id) VALUES ('{parsedPatient.Resources[0].Resource.Id}')", connection, transaction))
             {
               command.ExecuteNonQuery();
             }
@@ -74,10 +72,10 @@
             foreach (var resource in parsedPatient.Resources)
             {
               using (var command = new SQLiteCommand(
-                $"INSERT OR IGNORE INTO Resource (Id, PatientId, Payload) VALUES ('{resource.Id}', '{parsedPatient.Resources[0].Id}', @payload)",
+                $"INSERT OR IGNORE INTO Resource (Id, PatientId, Payload) VALUES ('{resource.Resource.Id}', '{parsedPatient.Resources[0].Resource.Id}', @payload)",
                 connection))
               {
-                command.Parameters.AddWithValue("payload", serializer.SerializeToString(resource));
+                command.Parameters.AddWithValue("payload", serializer.SerializeToString(resource.Resource));
                 command.ExecuteNonQuery();
               }
             }

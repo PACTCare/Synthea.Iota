@@ -6,7 +6,7 @@
   /// <summary>
   /// Interaction logic for LoadingSpinner.xaml
   /// </summary>
-  public partial class LoadingSpinner : Page
+  public partial class LoadingSpinner : UserControl
   {
     public LoadingSpinner()
     {

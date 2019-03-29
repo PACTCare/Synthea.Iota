@@ -11,9 +11,9 @@
   /// <summary>
   /// Interaction logic for MainMenu.xaml
   /// </summary>
-  public partial class MainMenu : Page
+  public partial class PatientCreation : UserControl
   {
-    public MainMenu()
+    public PatientCreation()
     {
       this.InitializeComponent();
     }
@@ -42,7 +42,7 @@
 
       SyntheaRunner.FinishedSynthea += (o, args) =>
         {
-          this.Dispatcher.BeginInvoke(new Action(() => { ApplicationManager.SetContent(new MainMenu()); }));
+          this.Dispatcher.BeginInvoke(new Action(() => { ApplicationManager.SetContent(new PatientCreation()); }));
         };
 
       var patientAmount = int.Parse(((TextBox)this.FindName("PatientAmount")).Text);

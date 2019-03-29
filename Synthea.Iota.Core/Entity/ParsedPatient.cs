@@ -10,14 +10,14 @@
     {
       get
       {
-        var name = ((Patient)this.Resources[0]).Name[0];
+        var name = ((Patient)this.Resources[0].Resource).Name[0];
         return $"{name.GivenElement[0].Value} {name.Family}";
       }
     }
 
     public int ResourceCount => this.Resources.Count;
 
-    public List<Resource> Resources { get; set; }
+    public List<ParsedResource> Resources { get; set; }
 
     public string Seed { get; set; }
   }

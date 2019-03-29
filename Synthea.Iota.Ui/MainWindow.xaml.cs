@@ -15,16 +15,16 @@
   {
     public MainWindow()
     {
+      ApplicationManager.MainWindow = this;
+
       this.InitializeComponent();
       this.InitializeSynthea();
-
-      ApplicationManager.MainWindow = this;
     }
 
     private void InitializeSynthea()
     {
       var spinner = new LoadingSpinner();
-      this.Content = spinner;
+      ApplicationManager.SetContent(spinner);
 
       spinner.Start();
 
@@ -53,12 +53,28 @@
                   }
                   else
                   {
-                    ApplicationManager.SetContent(new MainMenu());
+                    ApplicationManager.SetContent(new PatientCreation());
                   }
                 }));
         };
 
       Task.Run(() => ApplicationManager.CurrentSyntheaVersion = SyntheaInstaller.InstallOrUpdate());
+    }
+
+    private void GeneratePatients_OnClick(object sender, RoutedEventArgs e)
+    {
+      ApplicationManager.SetContent(new PatientCreation());
+    }
+
+    private void PatientOverview_OnClick(object sender, RoutedEventArgs e)
+    {
+      var patients = ApplicationManager.PatientRepository.LoadPatients();
+      ApplicationManager.SetContent(new PatientList(patients));
+    }
+
+    private void Exit_OnClick(object sender, RoutedEventArgs e)
+    {
+      Application.Current.Shutdown();
     }
   }
 }

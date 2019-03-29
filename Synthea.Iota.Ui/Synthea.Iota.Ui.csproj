@@ -117,7 +117,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MainMenu.xaml">
+    <Page Include="PatientCreation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -127,8 +127,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainMenu.xaml.cs">
-      <DependentUpon>MainMenu.xaml</DependentUpon>
+    <Compile Include="PatientCreation.xaml.cs">
+      <DependentUpon>PatientCreation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
