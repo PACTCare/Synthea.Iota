@@ -3,7 +3,6 @@
   using System.Collections.Generic;
   using System.Windows.Controls;
   using System.Windows.Input;
-  using System.Windows.Media.Animation;
 
   using Hl7.Fhir.Model;
 
@@ -20,6 +19,28 @@
       this.Patients.ItemsSource = patients;
     }
 
+    private static TreeViewItem StripElementValue(Base resource)
+    {
+      if (resource is CodeableConcept codeable)
+      {
+        return new TreeViewItem { Header = codeable.Text };
+      }
+
+      if (resource is SimpleQuantity quantity && quantity.Value.HasValue)
+      {
+        return new TreeViewItem { Header = $"{quantity.Value} {quantity.Unit}" };
+      }
+
+      return new TreeViewItem { Header = resource.GetType().FullName };
+    }
+
+    private void PatientDetails_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+      if (((TreeView)sender).SelectedItem is ParsedResource resource)
+      {
+      }
+    }
+
     private void Patients_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       if (!(e.AddedItems[0] is ParsedPatient patient))
@@ -34,7 +55,15 @@
 
         if (resource.Resource.GetType().GetProperty("Code") != null)
         {
-          treeViewItem.Items.Add(new TreeViewItem { Header = ((CodeableConcept)resource.Resource.GetType().GetProperty("Code")?.GetValue(resource.Resource, null))?.Text });
+          treeViewItem.Items.Add(
+            new TreeViewItem
+              {
+                Header = ((CodeableConcept)resource.Resource.GetType().GetProperty("Code")?.GetValue(resource.Resource, null))?.Text
+              });
+          if (resource.Resource is Observation observation && observation.Value != null)
+          {
+            treeViewItem.Items.Add(StripElementValue(observation.Value));
+          }
         }
         else
         {
@@ -42,24 +71,13 @@
           {
             var childItem = new TreeViewItem { Header = child.TypeName };
 
-            if (child is CodeableConcept codeable)
-            {
-              childItem.Items.Add(new TreeViewItem { Header = codeable.Text });
-            }
+            childItem.Items.Add(StripElementValue(child));
 
             treeViewItem.Items.Add(childItem);
           }
         }
 
         this.PatientDetails.Items.Add(treeViewItem);
-      }
-    }
-
-    private void PatientDetails_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-      if (((TreeView)sender).SelectedItem is ParsedResource resource)
-      {
-
       }
     }
   }
