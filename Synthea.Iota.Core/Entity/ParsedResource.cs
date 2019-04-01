@@ -4,6 +4,9 @@
   using System.Linq;
 
   using Hl7.Fhir.Model;
+  using Hl7.Fhir.Serialization;
+
+  using Newtonsoft.Json;
 
   public class ParsedResource
   {
@@ -12,5 +15,9 @@
     public string TypeName => this.Resource.ResourceType.ToString();
 
     public IEnumerable<Base> Children => this.Resource.Children;
+
+    public string Json => new FhirJsonSerializer().SerializeToString(this.Resource);
+
+    public string FormattedJson => JsonConvert.SerializeObject(JsonConvert.DeserializeObject(this.Json), Formatting.Indented);
   }
 }
