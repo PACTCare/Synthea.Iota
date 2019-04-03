@@ -11,7 +11,7 @@
       <ListView.View>
         <GridView>
           <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-          <GridViewColumn Header="Resource Count" DisplayMemberBinding="{Binding ResourceCount}" />
+          <GridViewColumn Header="Seed" DisplayMemberBinding="{Binding Seed.Value}" />
         </GridView>
       </ListView.View>
     </ListView>

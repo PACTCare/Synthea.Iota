@@ -9,6 +9,8 @@
 
   using Synthea.Iota.Core.Entity;
 
+  using Tangle.Net.Entity;
+
   public class SqlLitePatientRepository : IPatientRepository
   {
     private const string DatabaseFilename = "patientstore.sqlite";
@@ -33,7 +35,7 @@
           var patientRecords = command.ExecuteReader();
           while (patientRecords.Read())
           {
-            var parsedPatient = new ParsedPatient { Seed = patientRecords["Seed"] as string, Resources = new List<ParsedResource>() };
+            var parsedPatient = new ParsedPatient { Seed = new Seed(patientRecords["Seed"] as string), Resources = new List<ParsedResource>() };
 
             var patientId = patientRecords["Id"] as string;
             using (var innerCommand = new SQLiteCommand($"SELECT * FROM Resource WHERE PatientId='{patientId}'", connection))
@@ -64,7 +66,7 @@
         {
           foreach (var parsedPatient in patients)
           {
-            using (var command = new SQLiteCommand($"INSERT OR IGNORE INTO Patient (Id) VALUES ('{parsedPatient.Resources[0].Resource.Id}')", connection, transaction))
+            using (var command = new SQLiteCommand($"INSERT OR IGNORE INTO Patient (Id, Seed) VALUES ('{parsedPatient.Resources[0].Resource.Id}', '{parsedPatient.Seed.Value}')", connection, transaction))
             {
               command.ExecuteNonQuery();
             }

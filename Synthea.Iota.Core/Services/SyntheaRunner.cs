@@ -85,7 +85,7 @@
         var parsedBundle = resourceParser.Parse<Bundle>(File.ReadAllText(file));
         if (parsedBundle.Entry[0].Resource is Patient)
         {
-          parsedPatients.Add(new ParsedPatient { Resources = parsedBundle.Entry.Select(e => new ParsedResource { Resource = e.Resource }).ToList() });
+          parsedPatients.Add(ParsedPatient.FromBundle(parsedBundle));
         }
       }
 
