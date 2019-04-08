@@ -43,7 +43,8 @@
               var resources = innerCommand.ExecuteReader();
               while (resources.Read())
               {
-                parsedPatient.Resources.Add(new ParsedResource { Resource = parser.Parse<Resource>(resources["Payload"] as string) });
+                parsedPatient.Resources.Add(
+                  new ParsedResource { Resource = parser.Parse<Resource>(resources["Payload"] as string), Id = resources["Id"].ToString() });
               }
             }
 
@@ -77,13 +78,27 @@
                 $"INSERT OR IGNORE INTO Resource (Id, PatientId, Payload) VALUES ('{resource.Resource.Id}', '{parsedPatient.Resources[0].Resource.Id}', @payload)",
                 connection))
               {
-                command.Parameters.AddWithValue("payload", serializer.SerializeToString(resource.Resource));
+                command.Parameters.AddWithValue("payload", resource.Json);
                 command.ExecuteNonQuery();
               }
             }
           }
 
           transaction.Commit();
+        }
+      }
+    }
+
+    /// <inheritdoc />
+    public void UpdateResource(ParsedResource resource)
+    {
+      using (var connection = new SQLiteConnection($"Data Source={DatabaseFilename};Version=3;"))
+      {
+        connection.Open();
+
+        using (var command = new SQLiteCommand($"UPDATE Resource SET Payload='{resource.Json}' WHERE Id='{resource.Id}'", connection))
+        {
+          command.ExecuteNonQuery();
         }
       }
     }

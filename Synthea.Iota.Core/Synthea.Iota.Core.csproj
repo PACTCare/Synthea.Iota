@@ -64,11 +64,11 @@
     <Reference Include="Pact.Fhir.Core, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Pact.Fhir.Core.0.0.2\lib\netstandard2.0\Pact.Fhir.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Pact.Fhir.Iota, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pact.Fhir.Iota.0.0.2\lib\netstandard2.0\Pact.Fhir.Iota.dll</HintPath>
+    <Reference Include="Pact.Fhir.Iota, Version=0.0.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pact.Fhir.Iota.0.0.2.1\lib\netstandard2.0\Pact.Fhir.Iota.dll</HintPath>
     </Reference>
-    <Reference Include="Pact.Fhir.Iota.SqlLite, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pact.Fhir.Iota.SqlLite.0.0.2\lib\netstandard2.0\Pact.Fhir.Iota.SqlLite.dll</HintPath>
+    <Reference Include="Pact.Fhir.Iota.SqlLite, Version=0.0.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pact.Fhir.Iota.SqlLite.0.0.2.1\lib\netstandard2.0\Pact.Fhir.Iota.SqlLite.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=106.6.9.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.6.9\lib\net452\RestSharp.dll</HintPath>
@@ -109,6 +109,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\IPatientRepository.cs" />
     <Compile Include="Repository\SqlLitePatientRepository.cs" />
+    <Compile Include="Services\DependencyResolver.cs" />
+    <Compile Include="Services\FhirInteractor.cs" />
     <Compile Include="Services\SyntheaInstaller.cs" />
     <Compile Include="Services\SyntheaRunner.cs" />
   </ItemGroup>
