@@ -1,9 +1,11 @@
 ﻿namespace Syntha.Iota.Ui
 {
   using System;
+  using System.Collections.Generic;
   using System.Threading.Tasks;
   using System.Windows;
 
+  using Synthea.Iota.Core.Entity;
   using Synthea.Iota.Core.Services;
   using Synthea.Iota.Ui;
   using Synthea.Iota.Ui.Services;
@@ -68,8 +70,7 @@
 
     private void PatientOverview_OnClick(object sender, RoutedEventArgs e)
     {
-      var patients = ApplicationManager.PatientRepository.LoadPatients();
-      ApplicationManager.SetContent(new PatientList(patients));
+      ApplicationManager.SetContent(new PatientList(ApplicationManager.PatientRepository.LoadPatients()));
     }
 
     private void Exit_OnClick(object sender, RoutedEventArgs e)

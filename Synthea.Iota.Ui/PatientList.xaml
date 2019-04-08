@@ -11,10 +11,9 @@
       <ListView.View>
         <GridView>
           <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-          <GridViewColumn Header="Seed" DisplayMemberBinding="{Binding Seed.Value}" />
         </GridView>
       </ListView.View>
     </ListView>
-    <TreeView HorizontalAlignment="Right" Width="880" Name="PatientDetails" Margin="0, 10" MouseDoubleClick="PatientDetails_OnMouseDoubleClick" MouseRightButtonDown="PatientDetails_OnMouseRightButtonDown" />
+    <TreeView HorizontalAlignment="Left" Width="1200" Name="PatientDetails" Margin="300, 10, 0, 0" MouseDoubleClick="PatientDetails_OnMouseDoubleClick" MouseRightButtonDown="PatientDetails_OnMouseRightButtonDown" />
   </Grid>
 </UserControl>

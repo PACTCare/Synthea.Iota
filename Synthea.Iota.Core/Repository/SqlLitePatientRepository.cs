@@ -21,6 +21,32 @@
     }
 
     /// <inheritdoc />
+    public ParsedResource GetResource(string id)
+    {
+      var parser = new FhirJsonParser();
+      using (var connection = new SQLiteConnection($"Data Source={DatabaseFilename};Version=3;"))
+      {
+        connection.Open();
+
+        using (var command = new SQLiteCommand($"SELECT * FROM Resource WHERE Id='{id}'", connection))
+        {
+          var resources = command.ExecuteReader();
+          if (resources.Read())
+          {
+            return new ParsedResource
+                     {
+                       Resource = parser.Parse<Resource>(resources["Payload"] as string),
+                       Id = resources["Id"].ToString(),
+                       PatientId = resources["PatientId"].ToString()
+                     };
+          }
+
+          return null;
+        }
+      }
+    }
+
+    /// <inheritdoc />
     public List<ParsedPatient> LoadPatients()
     {
       var parser = new FhirJsonParser();
@@ -44,7 +70,12 @@
               while (resources.Read())
               {
                 parsedPatient.Resources.Add(
-                  new ParsedResource { Resource = parser.Parse<Resource>(resources["Payload"] as string), Id = resources["Id"].ToString() });
+                  new ParsedResource
+                    {
+                      Resource = parser.Parse<Resource>(resources["Payload"] as string),
+                      Id = resources["Id"].ToString(),
+                      PatientId = resources["PatientId"].ToString()
+                    });
               }
             }
 
@@ -59,7 +90,6 @@
     /// <inheritdoc />
     public void StorePatients(List<ParsedPatient> patients)
     {
-      var serializer = new FhirJsonSerializer();
       using (var connection = new SQLiteConnection($"Data Source={DatabaseFilename};Version=3;"))
       {
         connection.Open();

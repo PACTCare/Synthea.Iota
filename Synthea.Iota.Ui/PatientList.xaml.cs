@@ -1,5 +1,6 @@
 ﻿namespace Synthea.Iota.Ui
 {
+  using System;
   using System.Collections.Generic;
   using System.Threading.Tasks;
   using System.Windows;
@@ -7,11 +8,9 @@
   using System.Windows.Input;
   using System.Windows.Media;
 
-  using Pact.Fhir.Core.Usecase.CreateResource;
-
   using Synthea.Iota.Core.Entity;
-  using Synthea.Iota.Core.Repository;
   using Synthea.Iota.Core.Services;
+  using Synthea.Iota.Ui.Services;
 
   /// <summary>
   /// Interaction logic for PatientList.xaml
@@ -24,7 +23,7 @@
       this.Patients.ItemsSource = patients;
     }
 
-    static TreeViewItem VisualUpwardSearch(DependencyObject source)
+    private static TreeViewItem VisualUpwardSearch(DependencyObject source)
     {
       while (source != null && !(source is TreeViewItem))
       {
@@ -43,20 +42,38 @@
 
     private void PatientDetails_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
-      var treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
-      if (treeViewItem == null)
+      try
       {
-        return;
-      }
+        var treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
+        if (treeViewItem == null || treeViewItem.Items.Count < 2
+                                 || !(treeViewItem.Items.GetItemAt(treeViewItem.Items.Count - 1) is ParsedResource resource))
+        {
+          return;
+        }
 
-      if (treeViewItem.Items.GetItemAt(1) is ParsedResource resource)
-      {
+        var spinner = new LoadingSpinner();
+        spinner.SetText("Creating resource on Tangle");
+        ApplicationManager.SetContent(spinner);
+
+        spinner.Start();
+
         Task.Factory.StartNew(
           () =>
             {
-              var response = FhirInteractor.CreateResource(resource);
-              new SqlLitePatientRepository().UpdateResource(new ParsedResource { Resource = response, Id = resource.Id });
+              FhirInteractor.CreateResource(resource);
+
+              this.Dispatcher.BeginInvoke(
+                new Action(
+                  () =>
+                    {
+                      spinner.Stop();
+                      ApplicationManager.SetContent(new PatientList(ApplicationManager.PatientRepository.LoadPatients()));
+                    }));
             });
+      }
+      catch
+      {
+        // ignored
       }
     }
 
@@ -71,7 +88,19 @@
       foreach (var resource in patient.Resources)
       {
         var treeViewItem = new TreeViewItem { Header = resource.TypeName };
-        treeViewItem.Items.Add(new TextBox { Text = resource.FormattedJson });
+
+        var jsonViewItem = new TreeViewItem { Header = "Json View" };
+        jsonViewItem.Items.Add(new TextBox { Text = resource.FormattedJson, IsReadOnly = true });
+        treeViewItem.Items.Add(jsonViewItem);
+
+        if (resource.IsIotaResource)
+        {
+          var tangleDetails = new TreeViewItem { Header = "Tangle information" };
+          tangleDetails.Items.Add(
+            new TextBox { Text = $"http://localhost:64264/api/fhir/{resource.TypeName}/{resource.Resource.Id}", IsReadOnly = true });
+          treeViewItem.Items.Add(tangleDetails);
+        }
+
         treeViewItem.Items.Add(resource);
 
         this.PatientDetails.Items.Add(treeViewItem);
