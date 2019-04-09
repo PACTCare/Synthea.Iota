@@ -126,8 +126,9 @@
       {
         connection.Open();
 
-        using (var command = new SQLiteCommand($"UPDATE Resource SET Payload='{resource.Json}' WHERE Id='{resource.Id}'", connection))
+        using (var command = new SQLiteCommand($"UPDATE Resource SET Payload=@payload WHERE Id='{resource.Id}'", connection))
         {
+          command.Parameters.AddWithValue("payload", resource.Json);
           command.ExecuteNonQuery();
         }
       }
