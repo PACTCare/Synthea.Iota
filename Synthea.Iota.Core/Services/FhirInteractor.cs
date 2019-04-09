@@ -1,11 +1,15 @@
 ﻿namespace Synthea.Iota.Core.Services
 {
+  using System;
+  using System.Net;
+
   using Hl7.Fhir.Model;
   using Hl7.Fhir.Serialization;
 
   using RestSharp;
 
   using Synthea.Iota.Core.Entity;
+  using Synthea.Iota.Core.Exception;
   using Synthea.Iota.Core.Repository;
 
   public static class FhirInteractor
@@ -37,14 +41,20 @@
 
       var response = client.Execute(request);
 
-      // TODO: Verify response
-      var parsedResource = new ParsedResource
-                             {
-                               Id = resource.Id, PatientId = resource.PatientId, Resource = new FhirJsonParser().Parse<Resource>(response.Content)
-                             };
-      patientRepository.UpdateResource(parsedResource);
+      if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created)
+      {
+        var parsedResource = new ParsedResource
+                               {
+                                 Id = resource.Id,
+                                 PatientId = resource.PatientId,
+                                 Resource = new FhirJsonParser().Parse<Resource>(response.Content)
+                               };
+        patientRepository.UpdateResource(parsedResource);
 
-      return parsedResource;
+        return parsedResource;
+      }
+
+      throw new ResourceException(new FhirJsonParser().Parse<OperationOutcome>(response.Content));
     }
   }
 }

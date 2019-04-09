@@ -106,6 +106,7 @@
   <ItemGroup>
     <Compile Include="Entity\ParsedPatient.cs" />
     <Compile Include="Entity\ParsedResource.cs" />
+    <Compile Include="Exception\ResourceException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\IPatientRepository.cs" />
     <Compile Include="Repository\SqlLitePatientRepository.cs" />

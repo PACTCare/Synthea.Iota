@@ -2,13 +2,19 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
   using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Input;
   using System.Windows.Media;
 
+  using Hl7.Fhir.Serialization;
+
+  using Newtonsoft.Json;
+
   using Synthea.Iota.Core.Entity;
+  using Synthea.Iota.Core.Exception;
   using Synthea.Iota.Core.Services;
   using Synthea.Iota.Ui.Services;
 
@@ -81,7 +87,9 @@
         Task.Factory.StartNew(
           () =>
             {
-              var updatedResource = FhirInteractor.CreateResource(resource);
+              try
+              {
+                var updatedResource = FhirInteractor.CreateResource(resource);
 
               this.Dispatcher.BeginInvoke(
                 new Action(
@@ -92,6 +100,20 @@
 
                       var selectedIndex = this.PatientDetails.Items.IndexOf(treeViewItem);
 
+                      foreach (ParsedPatient patient in this.Patients.ItemsSource)
+                      {
+                        if (patient.Resources.First().PatientId != updatedResource.PatientId)
+                        {
+                          continue;
+                        }
+
+                        var resourceToUpdate = patient.Resources.FirstOrDefault(r => r.Id == updatedResource.Id);
+                        if (resourceToUpdate != null)
+                        {
+                          resourceToUpdate.Resource = updatedResource.Resource;
+                        }
+                      }
+
                       this.PatientDetails.Items.RemoveAt(selectedIndex);
                       this.PatientDetails.Items.Insert(selectedIndex, newItem);
                       this.PatientDetails.Items.Refresh();
@@ -99,6 +121,19 @@
 
                       ApplicationManager.SetContent(this);
                     }));
+              }
+              catch (ResourceException exception)
+              {
+                this.Dispatcher.BeginInvoke(
+                  new Action(
+                    () =>
+                      {
+                        ApplicationManager.SetContent(this);
+                        MessageBox.Show(
+                          JsonConvert.SerializeObject(JsonConvert.DeserializeObject(exception.Outcome.ToJson()), Formatting.Indented),
+                          "Creation Failed");
+                      }));
+              }
             });
       }
       catch
