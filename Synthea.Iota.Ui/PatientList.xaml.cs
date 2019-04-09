@@ -88,7 +88,6 @@
                   new Action(
                     () =>
                       {
-                        spinner.Stop();
                         var newItem = this.CreateTreeViewItem(updatedResource);
 
                         foreach (ParsedPatient patient in this.Patients.ItemsSource)
@@ -112,7 +111,7 @@
                         this.PatientDetails.Items.Refresh();
                         this.PatientDetails.UpdateLayout();
 
-                        ApplicationManager.SetContent(this);
+                        spinner.Stop();
                       }));
               }
               catch (ResourceException exception)
@@ -121,8 +120,25 @@
                   new Action(
                     () =>
                       {
-                        ApplicationManager.SetContent(this);
                         MessageBox.Show(exception.Outcome.ToFormattedJson(), "Creation Failed");
+                      }));
+              }
+              catch (Exception exception)
+              {
+                this.Dispatcher.BeginInvoke(
+                  new Action(
+                    () =>
+                      {
+                        MessageBox.Show(exception.StackTrace, exception.Message);
+                      }));
+              }
+              finally
+              {
+                this.Dispatcher.BeginInvoke(
+                  new Action(
+                    () =>
+                      {
+                        ApplicationManager.SetContent(this);
                       }));
               }
             });
