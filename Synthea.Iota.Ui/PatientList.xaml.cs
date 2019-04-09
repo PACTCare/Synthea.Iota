@@ -6,7 +6,6 @@
   using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Controls;
-  using System.Windows.Input;
   using System.Windows.Media;
 
   using Hl7.Fhir.Serialization;
@@ -29,8 +28,9 @@
       this.Patients.ItemsSource = patients;
     }
 
-    private static TreeViewItem CreateTreeViewItem(ParsedResource resource)
+    private TreeViewItem CreateTreeViewItem(ParsedResource resource)
     {
+      var menuItem = new MenuItem { Header = "Upload to Tangle" };
       var treeViewItem = new TreeViewItem
                            {
                              Header = new Label
@@ -38,8 +38,17 @@
                                           Content = resource.TypeName,
                                           Foreground = resource.IsIotaResource ? Brushes.DarkGreen : Brushes.Black,
                                           FontWeight = FontWeights.Bold
-                                        }
+                                        },
+                             ContextMenu = new ContextMenu { ItemsSource = new List<MenuItem> { menuItem } }
                            };
+
+      menuItem.Click += (sender, args) =>
+        {
+          if (sender is MenuItem)
+          {
+            this.UploadResource(treeViewItem, resource);
+          }
+        };
 
       var jsonViewItem = new TreeViewItem { Header = "Json View" };
       jsonViewItem.Items.Add(new TextBox { Text = resource.FormattedJson, IsReadOnly = true });
@@ -57,27 +66,10 @@
       return treeViewItem;
     }
 
-    private static TreeViewItem VisualUpwardSearch(DependencyObject source)
-    {
-      while (source != null && !(source is TreeViewItem))
-      {
-        source = VisualTreeHelper.GetParent(source);
-      }
-
-      return source as TreeViewItem;
-    }
-
-    private void PatientDetails_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    private void UploadResource(TreeViewItem treeViewItem, ParsedResource resource)
     {
       try
       {
-        var treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
-        if (treeViewItem == null || treeViewItem.Items.Count < 2
-                                 || !(treeViewItem.Items.GetItemAt(treeViewItem.Items.Count - 1) is ParsedResource resource))
-        {
-          return;
-        }
-
         var spinner = new LoadingSpinner();
         spinner.SetText("Creating resource on Tangle");
         ApplicationManager.SetContent(spinner);
@@ -91,36 +83,36 @@
               {
                 var updatedResource = FhirInteractor.CreateResource(resource);
 
-              this.Dispatcher.BeginInvoke(
-                new Action(
-                  () =>
-                    {
-                      spinner.Stop();
-                      var newItem = CreateTreeViewItem(updatedResource);
-
-                      var selectedIndex = this.PatientDetails.Items.IndexOf(treeViewItem);
-
-                      foreach (ParsedPatient patient in this.Patients.ItemsSource)
+                this.Dispatcher.BeginInvoke(
+                  new Action(
+                    () =>
                       {
-                        if (patient.Resources.First().PatientId != updatedResource.PatientId)
+                        spinner.Stop();
+                        var newItem = this.CreateTreeViewItem(updatedResource);
+
+                        foreach (ParsedPatient patient in this.Patients.ItemsSource)
                         {
-                          continue;
+                          if (patient.Resources.First().PatientId != updatedResource.PatientId)
+                          {
+                            continue;
+                          }
+
+                          var resourceToUpdate = patient.Resources.FirstOrDefault(r => r.Id == updatedResource.Id);
+                          if (resourceToUpdate != null)
+                          {
+                            resourceToUpdate.Resource = updatedResource.Resource;
+                          }
                         }
 
-                        var resourceToUpdate = patient.Resources.FirstOrDefault(r => r.Id == updatedResource.Id);
-                        if (resourceToUpdate != null)
-                        {
-                          resourceToUpdate.Resource = updatedResource.Resource;
-                        }
-                      }
+                        var selectedIndex = this.PatientDetails.Items.IndexOf(treeViewItem);
+                        this.PatientDetails.Items.RemoveAt(selectedIndex);
+                        this.PatientDetails.Items.Insert(selectedIndex, newItem);
 
-                      this.PatientDetails.Items.RemoveAt(selectedIndex);
-                      this.PatientDetails.Items.Insert(selectedIndex, newItem);
-                      this.PatientDetails.Items.Refresh();
-                      this.PatientDetails.UpdateLayout();
+                        this.PatientDetails.Items.Refresh();
+                        this.PatientDetails.UpdateLayout();
 
-                      ApplicationManager.SetContent(this);
-                    }));
+                        ApplicationManager.SetContent(this);
+                      }));
               }
               catch (ResourceException exception)
               {
@@ -152,7 +144,7 @@
       this.PatientDetails.Items.Clear();
       foreach (var resource in patient.Resources)
       {
-        this.PatientDetails.Items.Add(CreateTreeViewItem(resource));
+        this.PatientDetails.Items.Add(this.CreateTreeViewItem(resource));
       }
     }
   }
