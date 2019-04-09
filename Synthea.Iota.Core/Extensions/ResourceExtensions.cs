@@ -9,7 +9,7 @@
   {
     public static string ToFormattedJson(this Resource resource)
     {
-      return JsonConvert.SerializeObject(JsonConvert.DeserializeObject(resource.ToJson()));
+      return JsonConvert.SerializeObject(JsonConvert.DeserializeObject(resource.ToJson()), Formatting.Indented);
     }
   }
 }
