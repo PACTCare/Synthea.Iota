@@ -14,6 +14,7 @@
 
   using Synthea.Iota.Core.Entity;
   using Synthea.Iota.Core.Exception;
+  using Synthea.Iota.Core.Extensions;
   using Synthea.Iota.Core.Services;
   using Synthea.Iota.Ui.Services;
 
@@ -121,9 +122,7 @@
                     () =>
                       {
                         ApplicationManager.SetContent(this);
-                        MessageBox.Show(
-                          JsonConvert.SerializeObject(JsonConvert.DeserializeObject(exception.Outcome.ToJson()), Formatting.Indented),
-                          "Creation Failed");
+                        MessageBox.Show(exception.Outcome.ToFormattedJson(), "Creation Failed");
                       }));
               }
             });

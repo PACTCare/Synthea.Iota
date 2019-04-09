@@ -5,11 +5,13 @@
 
   using Newtonsoft.Json;
 
+  using Synthea.Iota.Core.Extensions;
+
   using Tangle.Net.Utils;
 
   public class ParsedResource
   {
-    public string FormattedJson => JsonConvert.SerializeObject(JsonConvert.DeserializeObject(this.Json), Formatting.Indented);
+    public string FormattedJson => this.Resource.ToFormattedJson();
 
     public string Id { get; set; }
 
