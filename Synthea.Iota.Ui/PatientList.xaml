@@ -14,6 +14,6 @@
         </GridView>
       </ListView.View>
     </ListView>
-    <TreeView HorizontalAlignment="Left" Width="1200" Name="PatientDetails" Margin="300, 10, 0, 0" MouseDoubleClick="PatientDetails_OnMouseDoubleClick" MouseRightButtonDown="PatientDetails_OnMouseRightButtonDown" />
+    <TreeView HorizontalAlignment="Left" Width="1200" Name="PatientDetails" Margin="300, 10, 0, 0" MouseRightButtonDown="PatientDetails_OnMouseRightButtonDown" />
   </Grid>
 </UserControl>

@@ -23,6 +23,34 @@
       this.Patients.ItemsSource = patients;
     }
 
+    private static TreeViewItem CreateTreeViewItem(ParsedResource resource)
+    {
+      var treeViewItem = new TreeViewItem
+                           {
+                             Header = new Label
+                                        {
+                                          Content = resource.TypeName,
+                                          Foreground = resource.IsIotaResource ? Brushes.DarkGreen : Brushes.Black,
+                                          FontWeight = FontWeights.Bold
+                                        }
+                           };
+
+      var jsonViewItem = new TreeViewItem { Header = "Json View" };
+      jsonViewItem.Items.Add(new TextBox { Text = resource.FormattedJson, IsReadOnly = true });
+      treeViewItem.Items.Add(jsonViewItem);
+
+      if (resource.IsIotaResource)
+      {
+        var tangleDetails = new TreeViewItem { Header = "Tangle information" };
+        tangleDetails.Items.Add(
+          new TextBox { Text = $"http://localhost:64264/api/fhir/{resource.TypeName}/{resource.Resource.Id}", IsReadOnly = true });
+        treeViewItem.Items.Add(tangleDetails);
+      }
+
+      treeViewItem.Items.Add(resource);
+      return treeViewItem;
+    }
+
     private static TreeViewItem VisualUpwardSearch(DependencyObject source)
     {
       while (source != null && !(source is TreeViewItem))
@@ -31,13 +59,6 @@
       }
 
       return source as TreeViewItem;
-    }
-
-    private void PatientDetails_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-      if (((TreeView)sender).SelectedItem is ParsedResource resource)
-      {
-      }
     }
 
     private void PatientDetails_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -60,14 +81,23 @@
         Task.Factory.StartNew(
           () =>
             {
-              FhirInteractor.CreateResource(resource);
+              var updatedResource = FhirInteractor.CreateResource(resource);
 
               this.Dispatcher.BeginInvoke(
                 new Action(
                   () =>
                     {
                       spinner.Stop();
-                      ApplicationManager.SetContent(new PatientList(ApplicationManager.PatientRepository.LoadPatients()));
+                      var newItem = CreateTreeViewItem(updatedResource);
+
+                      var selectedIndex = this.PatientDetails.Items.IndexOf(treeViewItem);
+
+                      this.PatientDetails.Items.RemoveAt(selectedIndex);
+                      this.PatientDetails.Items.Insert(selectedIndex, newItem);
+                      this.PatientDetails.Items.Refresh();
+                      this.PatientDetails.UpdateLayout();
+
+                      ApplicationManager.SetContent(this);
                     }));
             });
       }
@@ -87,23 +117,7 @@
       this.PatientDetails.Items.Clear();
       foreach (var resource in patient.Resources)
       {
-        var treeViewItem = new TreeViewItem { Header = resource.TypeName };
-
-        var jsonViewItem = new TreeViewItem { Header = "Json View" };
-        jsonViewItem.Items.Add(new TextBox { Text = resource.FormattedJson, IsReadOnly = true });
-        treeViewItem.Items.Add(jsonViewItem);
-
-        if (resource.IsIotaResource)
-        {
-          var tangleDetails = new TreeViewItem { Header = "Tangle information" };
-          tangleDetails.Items.Add(
-            new TextBox { Text = $"http://localhost:64264/api/fhir/{resource.TypeName}/{resource.Resource.Id}", IsReadOnly = true });
-          treeViewItem.Items.Add(tangleDetails);
-        }
-
-        treeViewItem.Items.Add(resource);
-
-        this.PatientDetails.Items.Add(treeViewItem);
+        this.PatientDetails.Items.Add(CreateTreeViewItem(resource));
       }
     }
   }

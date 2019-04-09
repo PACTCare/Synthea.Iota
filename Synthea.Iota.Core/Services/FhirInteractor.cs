@@ -10,7 +10,7 @@
 
   public static class FhirInteractor
   {
-    public static void CreateResource(ParsedResource resource)
+    public static ParsedResource CreateResource(ParsedResource resource)
     {
       var patientRepository = new SqlLitePatientRepository();
       var referencedResource = patientRepository.GetResource(resource.PatientId);
@@ -36,7 +36,15 @@
       request.AddParameter("application/fhir+json", resource.Json, ParameterType.RequestBody);
 
       var response = client.Execute(request);
-      patientRepository.UpdateResource(new ParsedResource { Resource = new FhirJsonParser().Parse<Resource>(response.Content), Id = resource.Id });
+
+      // TODO: Verify response
+      var parsedResource = new ParsedResource
+                             {
+                               Id = resource.Id, PatientId = resource.PatientId, Resource = new FhirJsonParser().Parse<Resource>(response.Content)
+                             };
+      patientRepository.UpdateResource(parsedResource);
+
+      return parsedResource;
     }
   }
 }
