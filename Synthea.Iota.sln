@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synthea.Iota.Ui", "Synthea.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synthea.Iota.Core", "Synthea.Iota.Core\Synthea.Iota.Core.csproj", "{F344D80F-D7D6-4488-BB39-6E20F2A6F208}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthea.Iota.Core.Tests", "Synthea.Iota.Core.Tests\Synthea.Iota.Core.Tests.csproj", "{EF5F7B52-8FAE-49F2-B6A2-BF73800BA1FE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{F344D80F-D7D6-4488-BB39-6E20F2A6F208}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F344D80F-D7D6-4488-BB39-6E20F2A6F208}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F344D80F-D7D6-4488-BB39-6E20F2A6F208}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF5F7B52-8FAE-49F2-B6A2-BF73800BA1FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF5F7B52-8FAE-49F2-B6A2-BF73800BA1FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF5F7B52-8FAE-49F2-B6A2-BF73800BA1FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF5F7B52-8FAE-49F2-B6A2-BF73800BA1FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
