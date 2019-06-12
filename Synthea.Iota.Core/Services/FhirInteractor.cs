@@ -23,17 +23,17 @@
       {
         resource.Resource.GetType().GetProperty("Subject")?.SetValue(
           resource.Resource,
-          new ResourceReference { Reference = $"urn:iota:{referencedResource.Resource.Id}" });
+          new ResourceReference { Reference = $"did:iota:{referencedResource.Resource.Id}" });
       }
 
       if (resource.Resource.GetType().GetProperty("Patient") != null)
       {
         resource.Resource.GetType().GetProperty("Patient")?.SetValue(
           resource.Resource,
-          new ResourceReference { Reference = $"urn:iota:{referencedResource.Resource.Id}" });
+          new ResourceReference { Reference = $"did:iota:{referencedResource.Resource.Id}" });
       }
 
-      var client = new RestClient("http://localhost:64264");
+      var client = new RestClient("http://pactfhir.azurewebsites.net");
       var request = new RestRequest($"/api/fhir/create/{resource.TypeName}", Method.POST);
       request.AddHeader("Content-Type", "application/fhir+json");
       request.AddHeader("Prefer", "representation");

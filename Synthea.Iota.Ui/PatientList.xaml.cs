@@ -8,10 +8,6 @@
   using System.Windows.Controls;
   using System.Windows.Media;
 
-  using Hl7.Fhir.Serialization;
-
-  using Newtonsoft.Json;
-
   using Synthea.Iota.Core.Entity;
   using Synthea.Iota.Core.Exception;
   using Synthea.Iota.Core.Extensions;
@@ -59,7 +55,7 @@
       {
         var tangleDetails = new TreeViewItem { Header = "Tangle information" };
         tangleDetails.Items.Add(
-          new TextBox { Text = $"http://localhost:64264/api/fhir/{resource.TypeName}/{resource.Resource.Id}", IsReadOnly = true });
+          new TextBox { Text = $"http://pactfhir.azurewebsites.net/api/fhir/{resource.TypeName}/{resource.Resource.Id}", IsReadOnly = true });
         treeViewItem.Items.Add(tangleDetails);
       }
 
@@ -97,7 +93,7 @@
                             continue;
                           }
 
-                          var resourceToUpdate = patient.Resources.FirstOrDefault(r => r.Id == updatedResource.Id);
+                          var resourceToUpdate = patient.Resources.First(r => r.Id == updatedResource.Id);
                           if (resourceToUpdate != null)
                           {
                             resourceToUpdate.Resource = updatedResource.Resource;
