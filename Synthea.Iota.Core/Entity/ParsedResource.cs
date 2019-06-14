@@ -24,5 +24,8 @@
     public string TypeName => this.Resource.ResourceType.ToString();
 
     public bool IsIotaResource => this.Resource.Id != null && InputValidator.IsTrytes(this.Resource.Id);
+
+    public bool CanBeUploaded =>
+      this.Resource.GetType().GetProperty("Subject") != null || this.Resource.GetType().GetProperty("Patient") != null || this.TypeName == "Patient";
   }
 }

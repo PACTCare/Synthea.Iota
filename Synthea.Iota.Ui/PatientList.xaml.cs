@@ -27,7 +27,6 @@
 
     private TreeViewItem CreateTreeViewItem(ParsedResource resource)
     {
-      var menuItem = new MenuItem { Header = "Upload to Tangle" };
       var treeViewItem = new TreeViewItem
                            {
                              Header = new Label
@@ -35,17 +34,27 @@
                                           Content = resource.TypeName,
                                           Foreground = resource.IsIotaResource ? Brushes.DarkGreen : Brushes.Black,
                                           FontWeight = FontWeights.Bold
-                                        },
-                             ContextMenu = new ContextMenu { ItemsSource = new List<MenuItem> { menuItem } }
+                                        }
                            };
 
-      menuItem.Click += (sender, args) =>
-        {
-          if (sender is MenuItem)
+      if (resource.CanBeUploaded)
+      {
+        var menuItem = new MenuItem { Header = "Upload to Tangle" };
+        treeViewItem.ContextMenu = new ContextMenu { ItemsSource = new List<MenuItem> { menuItem } };
+
+        menuItem.Click += (sender, args) =>
           {
-            this.UploadResource(treeViewItem, resource);
-          }
-        };
+            if (sender is MenuItem)
+            {
+              this.UploadResource(treeViewItem, resource);
+            }
+          };
+      }
+      else
+      {
+        var menuItem = new MenuItem { Header = "Upload of Resource Type currently not supported", IsEnabled = false };
+        treeViewItem.ContextMenu = new ContextMenu { ItemsSource = new List<MenuItem> { menuItem } };
+      }
 
       var jsonViewItem = new TreeViewItem { Header = "Json View" };
       jsonViewItem.Items.Add(new TextBox { Text = resource.FormattedJson, IsReadOnly = true });
