@@ -63,8 +63,15 @@
       if (resource.IsIotaResource)
       {
         var tangleDetails = new TreeViewItem { Header = "Tangle information" };
+        var resourceLink = $"http://pactfhir.azurewebsites.net/api/fhir/{resource.TypeName}/{resource.Resource.Id}";
         tangleDetails.Items.Add(
-          new TextBox { Text = $"http://pactfhir.azurewebsites.net/api/fhir/{resource.TypeName}/{resource.Resource.Id}", IsReadOnly = true });
+          new TextBox { Text = resourceLink, IsReadOnly = true });
+        var clipboardButton = new Button { Content = new TextBlock { Text = "Copy to Clipboard" } };
+        clipboardButton.Click += (sender, args) =>
+          {
+            Clipboard.SetText(resourceLink);
+          };
+        tangleDetails.Items.Add(clipboardButton);
         treeViewItem.Items.Add(tangleDetails);
       }
 
