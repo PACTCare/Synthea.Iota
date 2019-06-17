@@ -7,7 +7,18 @@
       d:DesignHeight="450" d:DesignWidth="800">
 
   <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-    <TextBox x:Name="PatientAmount"/>
-    <Button Margin="0,25,0,-25" Click="ButtonBase_OnClick">Create Patients</Button>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Label Grid.Row="0" Grid.Column="0">Patient Amount</Label>
+    <TextBox Margin="2" x:Name="PatientAmount" Grid.Row="0" Grid.Column="1" />
+    <Button Margin="2" Click="ButtonBase_OnClick" Grid.Row="1" Grid.Column="1">Create Patients</Button>
   </Grid>
 </UserControl>

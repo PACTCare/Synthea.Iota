@@ -2,8 +2,11 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Threading.Tasks;
   using System.Windows;
+
+  using Microsoft.Win32;
 
   using Synthea.Iota.Core.Entity;
   using Synthea.Iota.Core.Services;
@@ -29,6 +32,7 @@
       ApplicationManager.SetContent(spinner);
 
       spinner.Start();
+      this.MainMenu.IsEnabled = false;
 
       SyntheaInstaller.VersionCheck += (sender, args) =>
         {
@@ -48,6 +52,8 @@
             new Action(
               () =>
                 {
+                  this.MainMenu.IsEnabled = true;
+
                   var patients = ApplicationManager.PatientRepository.LoadPatients();
                   if (patients.Count > 0)
                   {
@@ -76,6 +82,43 @@
     private void Exit_OnClick(object sender, RoutedEventArgs e)
     {
       Application.Current.Shutdown();
+    }
+
+    private void PatientImport_OnClick(object sender, RoutedEventArgs e)
+    {
+      var dialog = new OpenFileDialog { Multiselect = true };
+      if (dialog.ShowDialog() == true)
+      {
+        var spinner = new LoadingSpinner();
+        ApplicationManager.SetContent(spinner);
+
+        spinner.Start();
+        this.MainMenu.IsEnabled = false;
+
+        SyntheaRunner.ParsingSyntheaData += (o, args) =>
+          {
+            this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Parsing Patient records."); }));
+          };
+
+        SyntheaRunner.StoringSyntheaData += (o, args) =>
+          {
+            this.Dispatcher.BeginInvoke(new Action(() => { spinner.SetText("Storing Patient records."); }));
+          };
+
+        SyntheaRunner.FinishedSynthea += (o, args) =>
+          {
+            this.Dispatcher.BeginInvoke(
+              new Action(
+                () =>
+                  {
+                    this.MainMenu.IsEnabled = true;
+                    ApplicationManager.SetContent(new PatientCreation());
+                  }));
+          };
+
+        var parsedPatients = SyntheaRunner.ParsePatientFromFiles(dialog.FileNames);
+        SyntheaRunner.StoreParsedPatients(parsedPatients);
+      }
     }
   }
 }

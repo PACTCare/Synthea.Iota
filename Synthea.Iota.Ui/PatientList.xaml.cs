@@ -39,8 +39,8 @@
 
       if (resource.CanBeUploaded)
       {
-        var menuItem = new MenuItem { Header = "Upload to Tangle" };
-        treeViewItem.ContextMenu = new ContextMenu { ItemsSource = new List<MenuItem> { menuItem } };
+          var menuItem = new MenuItem { Header = "Upload to Tangle" };
+          treeViewItem.ContextMenu = new ContextMenu { ItemsSource = new List<MenuItem> { menuItem } };
 
         menuItem.Click += (sender, args) =>
           {
@@ -124,6 +124,15 @@
                         this.PatientDetails.UpdateLayout();
 
                         spinner.Stop();
+                      }));
+              }
+              catch (MissingReferenceException)
+              {
+                this.Dispatcher.BeginInvoke(
+                  new Action(
+                    () =>
+                      {
+                        MessageBox.Show("Referenced resource not uploaded yet. Upload Patient record first.", "Creation Failed");
                       }));
               }
               catch (ResourceException exception)

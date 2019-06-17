@@ -19,6 +19,11 @@
       var patientRepository = new SqlLitePatientRepository();
       var referencedResource = patientRepository.GetResource(resource.PatientId);
 
+      if (resource.TypeName != "Patient" && !referencedResource.IsIotaResource)
+      {
+        throw new MissingReferenceException();
+      }
+
       if (resource.Resource.GetType().GetProperty("Subject") != null)
       {
         resource.Resource.GetType().GetProperty("Subject")?.SetValue(
@@ -33,7 +38,7 @@
           new ResourceReference { Reference = $"did:iota:{referencedResource.Resource.Id}" });
       }
 
-      var client = new RestClient("http://pactfhir.azurewebsites.net");
+      var client = new RestClient("http://pactfhir.azurewebsites.net/");
       var request = new RestRequest($"/api/fhir/create/{resource.TypeName}", Method.POST);
       request.AddHeader("Content-Type", "application/fhir+json");
       request.AddHeader("Prefer", "representation");

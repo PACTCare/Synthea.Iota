@@ -7,10 +7,11 @@
         Title="Synthea Importer for IOTA" WindowState="Maximized">
   <Grid>
     <DockPanel>
-      <Menu DockPanel.Dock="Top">
+      <Menu DockPanel.Dock="Top" Name="MainMenu">
         <MenuItem Header="_File">
           <MenuItem Header="_Generate Patients" Click="GeneratePatients_OnClick" />
           <MenuItem Header="_Patient Overview" Click="PatientOverview_OnClick" />
+          <MenuItem Header="_Patient Import" Click="PatientImport_OnClick" />
           <Separator />
           <MenuItem Header="_Exit" Click="Exit_OnClick" />
         </MenuItem>

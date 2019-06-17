@@ -45,7 +45,9 @@
           this.Dispatcher.BeginInvoke(new Action(() => { ApplicationManager.SetContent(new PatientCreation()); }));
         };
 
-      var patientAmount = int.Parse(((TextBox)this.FindName("PatientAmount")).Text);
+      var amount = ((TextBox)this.FindName("PatientAmount"))?.Text;
+      var patientAmount = amount != null ? int.Parse(amount) : 0;
+
       Task.Run(
         () =>
           {

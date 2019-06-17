@@ -45,7 +45,7 @@
       File.Delete("synthea.zip");
 
       InstallLatest?.Invoke("SyntheaInstaller", EventArgs.Empty);
-      var synthea = SyntheaRunner.StartSynthea(string.Empty, currentVersion);
+      var synthea = SyntheaRunner.StartSynthea("-p 1", currentVersion);
       synthea.WaitForExit();
       synthea.Close();
 

@@ -4,7 +4,6 @@
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.IO;
-  using System.Linq;
 
   using Hl7.Fhir.Model;
   using Hl7.Fhir.Serialization;
@@ -18,9 +17,9 @@
 
     public static event EventHandler ParsingSyntheaData;
 
-    public static event EventHandler StoringSyntheaData;
-
     public static event EventHandler StartingSynthea;
+
+    public static event EventHandler StoringSyntheaData;
 
     public static List<ParsedPatient> CreatePatients(int count, string currentVersion)
     {
@@ -33,11 +32,8 @@
         process.Close();
 
         var parsedPatients = ParseSyntheaData(currentVersion);
+        StoreParsedPatients(parsedPatients);
 
-        StoringSyntheaData?.Invoke("SyntheaRunner", EventArgs.Empty);
-        new SqlLitePatientRepository().StorePatients(parsedPatients);
-
-        FinishedSynthea?.Invoke("SyntheaRunner", EventArgs.Empty);
         return parsedPatients;
       }
       catch (Exception e)
@@ -45,6 +41,27 @@
         Console.WriteLine(e);
         throw;
       }
+    }
+
+    public static List<ParsedPatient> ParsePatientFromFiles(string[] fileNames)
+    {
+      ParsingSyntheaData?.Invoke("SyntheaRunner", EventArgs.Empty);
+
+      var parsedPatients = new List<ParsedPatient>();
+      var resourceParser = new FhirJsonParser(
+        new ParserSettings { AcceptUnknownMembers = true, AllowUnrecognizedEnums = true, PermissiveParsing = true });
+
+      foreach (var file in fileNames)
+      {
+        var json = File.ReadAllText(file);
+        var parsedBundle = resourceParser.Parse<Bundle>(json);
+        if (parsedBundle.Entry[0].Resource is Patient)
+        {
+          parsedPatients.Add(ParsedPatient.FromBundle(parsedBundle));
+        }
+      }
+
+      return parsedPatients;
     }
 
     public static Process StartSynthea(string arguments, string currentVersion)
@@ -58,12 +75,20 @@
                             FileName = $"{directory}\\run_synthea.bat",
                             CreateNoWindow = true,
                             Arguments = arguments,
-                            WindowStyle = ProcessWindowStyle.Hidden
+                            WindowStyle = ProcessWindowStyle.Hidden,
                           }
                       };
 
       process.Start();
       return process;
+    }
+
+    public static void StoreParsedPatients(List<ParsedPatient> parsedPatients)
+    {
+      StoringSyntheaData?.Invoke("SyntheaRunner", EventArgs.Empty);
+      new SqlLitePatientRepository().StorePatients(parsedPatients);
+
+      FinishedSynthea?.Invoke("SyntheaRunner", EventArgs.Empty);
     }
 
     private static string GetSyntheaDirectory(string currentVersion)
@@ -74,20 +99,8 @@
 
     private static List<ParsedPatient> ParseSyntheaData(string currentVersion)
     {
-      ParsingSyntheaData?.Invoke("SyntheaRunner", EventArgs.Empty);
-
-      var parsedPatients = new List<ParsedPatient>();
-      var resourceParser = new FhirJsonParser();
       var outputDirectory = $"{GetSyntheaDirectory(currentVersion)}\\output\\fhir";
-
-      foreach (var file in Directory.GetFiles(outputDirectory))
-      {
-        var parsedBundle = resourceParser.Parse<Bundle>(File.ReadAllText(file));
-        if (parsedBundle.Entry[0].Resource is Patient)
-        {
-          parsedPatients.Add(ParsedPatient.FromBundle(parsedBundle));
-        }
-      }
+      var parsedPatients = ParsePatientFromFiles(Directory.GetFiles(outputDirectory));
 
       Directory.Delete(outputDirectory, true);
       return parsedPatients;
