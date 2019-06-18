@@ -9,6 +9,7 @@
   using Microsoft.Win32;
 
   using Synthea.Iota.Core.Entity;
+  using Synthea.Iota.Core.Exception;
   using Synthea.Iota.Core.Services;
   using Synthea.Iota.Ui;
   using Synthea.Iota.Ui.Services;
@@ -66,7 +67,49 @@
                 }));
         };
 
-      Task.Run(() => ApplicationManager.CurrentSyntheaVersion = SyntheaInstaller.InstallOrUpdate());
+      Task.Run(() =>
+        {
+          try
+          {
+            ApplicationManager.CurrentSyntheaVersion = SyntheaInstaller.InstallOrUpdate();
+          }
+          catch (JavaNotInstalledException)
+          {
+            this.Dispatcher.BeginInvoke(
+              new Action(
+                () =>
+                  {
+                    MessageBox.Show(
+                      "Synthea needs the Java 1.8 JDK or higher to be installed. Please go to https://www.oracle.com/technetwork/java/javase/downloads/index.html and install the latest JDK version.",
+                      "Java not installed or incorrect version!");
+
+                    Application.Current.Shutdown();
+                  }));
+          }
+          catch (JavaHomeNotSetException)
+          {
+            this.Dispatcher.BeginInvoke(
+              new Action(
+                () =>
+                  {
+                    MessageBox.Show(
+                      "Please set the java home variable to your JDK installation (see https://www.google.com/search?q=how+to+set+java_home&oq=how+to+set+java)",
+                      "Java path (JAVA_HOME) not set!");
+
+                    Application.Current.Shutdown();
+                  }));
+          }
+          catch (Exception exception)
+          {
+            this.Dispatcher.BeginInvoke(
+              new Action(
+                () =>
+                  {
+                    MessageBox.Show(exception.StackTrace, exception.Message);
+                    Application.Current.Shutdown();
+                  }));
+          }
+        });
     }
 
     private void GeneratePatients_OnClick(object sender, RoutedEventArgs e)

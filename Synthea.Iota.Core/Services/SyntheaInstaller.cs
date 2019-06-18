@@ -4,10 +4,14 @@
   using System.IO;
   using System.IO.Compression;
 
+  using Microsoft.Win32;
+
   using Newtonsoft.Json;
 
   using RestSharp;
   using RestSharp.Extensions;
+
+  using Synthea.Iota.Core.Exception;
 
   public static class SyntheaInstaller
   {
@@ -26,6 +30,8 @@
         Directory.CreateDirectory("Synthea");
       }
 
+      CheckJavaInstallation();
+
       VersionCheck?.Invoke("SyntheaInstaller", EventArgs.Empty);
       var client = new RestClient("https://github.com/synthetichealth/synthea");
 
@@ -40,9 +46,12 @@
       }
 
       DownloadLatest?.Invoke("SyntheaInstaller", EventArgs.Empty);
-      client.DownloadData(new RestRequest($"/archive/{tag}.zip")).SaveAs("synthea.zip");
-      ZipFile.ExtractToDirectory("synthea.zip", "Synthea");
-      File.Delete("synthea.zip");
+      client.DownloadData(new RestRequest($"/archive/{tag}.zip")).SaveAs("synthea.temp");
+      ZipFile.ExtractToDirectory("synthea.temp", "Synthea");
+      if (File.Exists("synthea.temp"))
+      {
+        File.Delete("synthea.temp");
+      }
 
       InstallLatest?.Invoke("SyntheaInstaller", EventArgs.Empty);
       var synthea = SyntheaRunner.StartSynthea("-p 1", currentVersion);
@@ -53,6 +62,14 @@
 
       SetupComplete?.Invoke("SyntheaInstaller", EventArgs.Empty);
       return currentVersion;
+    }
+
+    private static void CheckJavaInstallation()
+    {
+      if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAVA_HOME")))
+      {
+        throw new JavaHomeNotSetException();
+      }
     }
   }
 }

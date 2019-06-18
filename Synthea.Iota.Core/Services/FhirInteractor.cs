@@ -19,7 +19,7 @@
       var patientRepository = new SqlLitePatientRepository();
       var referencedResource = patientRepository.GetResource(resource.PatientId);
 
-      if (resource.TypeName != "Patient" && !referencedResource.IsIotaResource)
+      if ((referencedResource == null && resource.TypeName != "Patient") || (resource.TypeName != "Patient" && referencedResource != null && !referencedResource.IsIotaResource))
       {
         throw new MissingReferenceException();
       }

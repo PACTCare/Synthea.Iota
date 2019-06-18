@@ -86,6 +86,7 @@
         var spinner = new LoadingSpinner();
         spinner.SetText("Creating resource on Tangle");
         ApplicationManager.SetContent(spinner);
+        ApplicationManager.MainWindow.MainMenu.IsEnabled = false;
 
         spinner.Start();
 
@@ -159,6 +160,7 @@
                   new Action(
                     () =>
                       {
+                        ApplicationManager.MainWindow.MainMenu.IsEnabled = true;
                         ApplicationManager.SetContent(this);
                       }));
               }

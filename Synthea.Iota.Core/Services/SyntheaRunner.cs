@@ -101,6 +101,11 @@
     {
       var outputDirectory = $"{GetSyntheaDirectory(currentVersion)}\\output\\fhir";
       var parsedPatients = ParsePatientFromFiles(Directory.GetFiles(outputDirectory));
+      parsedPatients.ForEach(p => p.Resources.ForEach(r =>
+        {
+          r.Id = r.Resource.Id;
+          r.PatientId = p.Resources[0].Resource.Id;
+        }));
 
       Directory.Delete(outputDirectory, true);
       return parsedPatients;

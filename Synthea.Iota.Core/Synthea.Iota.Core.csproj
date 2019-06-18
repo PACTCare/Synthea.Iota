@@ -132,6 +132,8 @@
   <ItemGroup>
     <Compile Include="Entity\ParsedPatient.cs" />
     <Compile Include="Entity\ParsedResource.cs" />
+    <Compile Include="Exception\JavaHomeNotSetException.cs" />
+    <Compile Include="Exception\JavaNotInstalledException.cs" />
     <Compile Include="Exception\MissingReferenceException.cs" />
     <Compile Include="Exception\ResourceException.cs" />
     <Compile Include="Extensions\ResourceExtensions.cs" />
